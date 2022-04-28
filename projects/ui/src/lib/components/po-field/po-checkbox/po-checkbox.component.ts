@@ -47,6 +47,7 @@ import { PoCheckboxBaseComponent } from './po-checkbox-base.component';
 })
 export class PoCheckboxComponent extends PoCheckboxBaseComponent implements AfterViewInit {
   @ViewChild('checkboxLabel', { static: true }) checkboxLabel: ElementRef;
+  @ViewChild('checkBoxElement', { static: true }) checkBoxElement: ElementRef;
 
   constructor(private changeDetector: ChangeDetectorRef) {
     super();
