@@ -1,65 +1,341 @@
-import { AfterContentInit, AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
-import { PoButtonComponent } from '../../../ui/src/lib';
+import { AfterContentInit, AfterViewInit, Component, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { FormBuilder, NgForm } from '@angular/forms';
+import {
+  PoButtonComponent,
+  PoCheckboxComponent,
+  PoModalAction,
+  PoModalComponent,
+  PoSwitchComponent
+} from '../../../ui/src/lib';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html'
+  templateUrl: './app.component.html',
+  styleUrls: ['app.component.css']
 })
 export class AppComponent implements AfterViewInit {
-  @ViewChild('button') button: PoButtonComponent;
-  @ViewChild('result') result: HTMLElement;
+  @ViewChild('viewCSSModal') viewCSSModal: PoModalComponent;
 
-  brandForm = this.formBuilder.group({
+  @ViewChild('buttonP') buttonP: PoButtonComponent;
+  @ViewChild('buttonD') buttonD: PoButtonComponent;
+  @ViewChild('buttonL') buttonL: PoButtonComponent;
+  @ViewChild('checkbox') checkBox: PoCheckboxComponent;
+  @ViewChild('switch') switch: PoSwitchComponent;
+  @ViewChild('resultButtonD') resultButtonD: HTMLElement;
+  @ViewChild('resultButtonP') resultButtonP: HTMLElement;
+  @ViewChild('resultButtonL') resultButtonL: HTMLElement;
+  @ViewChild('resultCheckBox') resultCheckBox: HTMLElement;
+  @ViewChild('resultSwitch') resultSwitch: HTMLElement;
+
+  teste;
+
+  checkboxView = true;
+  botaoDefaultView = true;
+  botaoPrimaryView = true;
+  botaoLinkView = true;
+  switchView = true;
+  acordionView = true;
+  calendarView = true;
+  stepperView = true;
+  dynamicForView = true;
+
+  brandFormP = this.formBuilder.group({
     colorAction: [null]
   });
 
-  buttonForm = this.formBuilder.group({
-    borderRadius: [null],
-    fontSize: [null],
+  brandFormS = this.formBuilder.group({
+    colorAction: [null]
+  });
+
+  brandFormT = this.formBuilder.group({
+    colorAction: [null]
+  });
+
+  // Botão Primário
+  buttonFormPrimary = this.formBuilder.group({
     color: [null],
+    colorHover: [null],
+    borderColor: [null],
+    textColor: [null],
+    colorAction: [null],
+    textColorHover: [null]
+  });
+
+  // Botão Default
+  buttonFormDefault = this.formBuilder.group({
+    color: [null],
+    colorHover: [null],
+    textColor: [null],
+    textColorHover: [null]
+  });
+
+  // Botão Link
+  buttonFormLink = this.formBuilder.group({
+    color: [null],
+    colorHover: [null],
+    textColor: [null],
+    textColorHover: [null]
+  });
+
+  // CheckBox
+  checkBoxForm = this.formBuilder.group({
+    color: [null],
+    colorHover: [null],
+    shadowColor: [null],
     textColor: [null],
     colorAction: [null]
   });
 
-  private readonly formPropertyDict = {
-    borderRadius: '--border-radius',
-    fontSize: '--font-size',
-    color: '--color',
-    textColor: '--text-color',
-    colorAction: '--color-action-default'
+  // Switch
+  switchForm = this.formBuilder.group({
+    color: [null],
+    colorIcon: [null],
+    borderColor: [null]
+  });
+
+  private readonly formPropertyP = {
+    colorAction: '--color-primary'
+  };
+
+  private readonly formPropertyS = {
+    colorAction: '--color-secondary'
+  };
+
+  private readonly formPropertyT = {
+    colorAction: '--color-tertiary'
+  };
+
+  private readonly formPropertyDictButtonP = {
+    color: '--color-button-background-color-primary',
+    colorHover: '--color-button-background-color-primary-hover',
+    borderColor: '--color-button-border-primary',
+    textColor: '--color-button-color-primary'
+  };
+
+  private readonly formPropertyDictButtonD = {
+    color: '--color-button-border',
+    colorHover: '--color-button-border-hover',
+    textColor: '--color-button-color',
+    textColorHover: '--color-button-color-hover'
+  };
+
+  private readonly formPropertyDictButtonL = {
+    color: '--color-button-color-link',
+    colorHover: '--color-button-color-link-hover'
+  };
+
+  private readonly formPropertyDictCheckbox = {
+    color: '--color-checkbox-background-color-active',
+    colorHover: '--color-checkbox-border-input-active',
+    shadowColor: '--color-checkbox-hover-active'
+  };
+
+  private readonly formPropertyDictSwitch = {
+    color: '--color-switch-background-color-container-on',
+    colorIcon: '--color-switch-color-icon-on',
+    borderColor: '--color-switch-box-shadow-color-focusable'
   };
 
   constructor(private formBuilder: FormBuilder) {}
 
+  openGetcss() {
+    this.viewCSSModal.open();
+  }
+
+  copyToClipboard() {
+    const fieldJsonElement = document.querySelector('#fieldsCSS');
+    console.log(fieldJsonElement);
+
+    if (window.getSelection) {
+      window.getSelection().selectAllChildren(fieldJsonElement);
+      document.execCommand('copy');
+    }
+  }
+
+  verifyCss() {
+    return this.checkChanges();
+  }
+
   ngAfterViewInit(): void {
-    this.brandForm.valueChanges.subscribe(changes => this.checkChangesBrand(changes));
-    this.buttonForm.valueChanges.subscribe(changes => this.checkChanges(changes));
+    this.brandFormP.valueChanges.subscribe(changes => this.checkChangesBrandP(changes));
+    this.brandFormS.valueChanges.subscribe(changes => this.checkChangesBrandS(changes));
+    this.brandFormT.valueChanges.subscribe(changes => this.checkChangesBrandT(changes));
+    this.buttonFormPrimary.valueChanges.subscribe(changes => this.checkChangesButtonP(changes));
+    this.buttonFormDefault.valueChanges.subscribe(changes => this.checkChangesButtonD(changes));
+    this.buttonFormLink.valueChanges.subscribe(changes => this.checkChangesButtonL(changes));
+    this.checkBoxForm.valueChanges.subscribe(changes => this.checkChangesCheckbox(changes));
+
+    this.switchForm.valueChanges.subscribe(changes => this.checkChangesSwitch(changes));
   }
 
-  private checkChangesBrand(changes: any): void {
+  private checkChangesBrandP(changes: any): void {
     Object.keys(changes).forEach((fieldName: string) => {
       const value = /color/i.test(fieldName) ? changes[fieldName] : `var(--${changes[fieldName]})`;
 
       if (changes[fieldName]) {
-        document.getElementsByTagName('html')[0].style.setProperty(this.formPropertyDict[fieldName], value);
+        document.getElementsByTagName('html')[0].style.setProperty(this.formPropertyP[fieldName], value);
       }
     });
   }
 
-  private checkChanges(changes: { [key: string]: string }): void {
-    this.result['nativeElement'].innerHTML = 'po-button {<br>';
+  private checkChangesBrandT(changes: any): void {
+    Object.keys(changes).forEach((fieldName: string) => {
+      const value = /color/i.test(fieldName) ? changes[fieldName] : `var(--${changes[fieldName]})`;
+
+      if (changes[fieldName]) {
+        document.getElementsByTagName('html')[0].style.setProperty(this.formPropertyT[fieldName], value);
+      }
+    });
+  }
+
+  private checkChangesBrandS(changes: any): void {
+    // const colorInput = document.getElementById('colorN');
+    // colorInput.addEventListener('input', () =>{
+    //   document.getElementById('colorVal').innerHTML = colorInput['value'];
+    // });
 
     Object.keys(changes).forEach((fieldName: string) => {
       const value = /color/i.test(fieldName) ? changes[fieldName] : `var(--${changes[fieldName]})`;
 
       if (changes[fieldName]) {
-        this.button.buttonElement.nativeElement.style.setProperty(this.formPropertyDict[fieldName], value);
+        document.getElementsByTagName('html')[0].style.setProperty(this.formPropertyS[fieldName], value);
+      }
+    });
+  }
 
-        this.result['nativeElement'].innerHTML += `${this.formPropertyDict[fieldName]}: ${value};<br>`;
+  private checkChangesButtonP(changes: { [key: string]: string }): void {
+    this.resultButtonP['nativeElement'].innerHTML = '/*button primary*/ <br>po-button {<br>';
+
+    Object.keys(changes).forEach((fieldName: string) => {
+      const value = /color/i.test(fieldName) ? changes[fieldName] : `var(--${changes[fieldName]})`;
+
+      if (changes[fieldName]) {
+        this.buttonP.buttonElement.nativeElement.style.setProperty(this.formPropertyDictButtonP[fieldName], value);
+
+        this.resultButtonP['nativeElement'].innerHTML += `${this.formPropertyDictButtonP[fieldName]}: ${value};<br>`;
       }
     });
 
-    this.result['nativeElement'].innerHTML += '}';
+    this.resultButtonP['nativeElement'].innerHTML += '}<br>';
   }
+
+  private checkChangesButtonD(changes: { [key: string]: string }): void {
+    this.resultButtonD['nativeElement'].innerHTML = '/*button Default*/ <br>po-button {<br>';
+
+    Object.keys(changes).forEach((fieldName: string) => {
+      const value = /color/i.test(fieldName) ? changes[fieldName] : `var(--${changes[fieldName]})`;
+
+      if (changes[fieldName]) {
+        this.buttonD.buttonElement.nativeElement.style.setProperty(this.formPropertyDictButtonD[fieldName], value);
+
+        this.resultButtonD['nativeElement'].innerHTML += `${this.formPropertyDictButtonD[fieldName]}: ${value};<br>`;
+      }
+    });
+
+    this.resultButtonD['nativeElement'].innerHTML += '}<br>';
+  }
+
+  private checkChangesButtonL(changes: { [key: string]: string }): void {
+    this.resultButtonL['nativeElement'].innerHTML = '/*button Link*/ <br>po-button {<br>';
+
+    Object.keys(changes).forEach((fieldName: string) => {
+      const value = /color/i.test(fieldName) ? changes[fieldName] : `var(--${changes[fieldName]})`;
+
+      if (changes[fieldName]) {
+        this.buttonL.buttonElement.nativeElement.style.setProperty(this.formPropertyDictButtonL[fieldName], value);
+
+        this.resultButtonL['nativeElement'].innerHTML += `${this.formPropertyDictButtonL[fieldName]}: ${value};<br>`;
+      }
+    });
+
+    this.resultButtonL['nativeElement'].innerHTML += '}';
+  }
+
+  private checkChangesCheckbox(changes: { [key: string]: string }): void {
+    this.resultCheckBox['nativeElement'].innerHTML = 'po-checkbox {<br>';
+
+    Object.keys(changes).forEach((fieldName: string) => {
+      const value = /color/i.test(fieldName) ? changes[fieldName] : `var(--${changes[fieldName]})`;
+
+      if (changes[fieldName]) {
+        this.checkBox.checkBoxElement.nativeElement.style.setProperty(this.formPropertyDictCheckbox[fieldName], value);
+
+        this.resultCheckBox['nativeElement'].innerHTML += `${this.formPropertyDictCheckbox[fieldName]}: ${value};<br>`;
+      }
+    });
+    this.resultCheckBox['nativeElement'].innerHTML += '}';
+  }
+
+  private checkChangesSwitch(changes: { [key: string]: string }): void {
+    this.resultSwitch['nativeElement'].innerHTML = 'po-switch {<br>';
+
+    Object.keys(changes).forEach((fieldName: string) => {
+      const value = /color/i.test(fieldName) ? changes[fieldName] : `var(--${changes[fieldName]})`;
+
+      if (changes[fieldName]) {
+        this.switch.switchContainer.nativeElement.style.setProperty(this.formPropertyDictSwitch[fieldName], value);
+
+        this.resultSwitch['nativeElement'].innerHTML += `${this.formPropertyDictSwitch[fieldName]}: ${value};<br>`;
+      }
+    });
+
+    this.resultSwitch['nativeElement'].innerHTML += '}';
+  }
+
+  private checkChanges() {
+    return (
+      !!this.resultButtonD?.['nativeElement']?.innerHTML ||
+      !!this.resultButtonP?.['nativeElement']?.innerHTML ||
+      !!this.resultButtonL?.['nativeElement']?.innerHTML ||
+      !!this.resultCheckBox?.['nativeElement']?.innerHTML ||
+      !!this.resultSwitch?.['nativeElement']?.innerHTML
+    );
+  }
+
+  fields: Array<any> = [
+    {
+      property: 'name',
+      divider: 'PERSONAL DATA',
+      required: true,
+      minLength: 4,
+      maxLength: 50,
+      gridColumns: 6,
+      gridSmColumns: 12,
+      order: 1,
+      placeholder: 'Type your name',
+      icon: 'po-icon po-icon-user'
+    },
+    { property: 'cpf', label: 'CPF', mask: '999.999.999-99', gridColumns: 6, gridSmColumns: 12, visible: false },
+    { property: 'cnpj', label: 'CNPJ', mask: '99.999.999/9999-99', gridColumns: 6, gridSmColumns: 12, visible: false },
+    { property: 'genre', gridColumns: 6, gridSmColumns: 12, options: ['Male', 'Female', 'Other'], order: 2 },
+    {
+      property: 'shortDescription',
+      label: 'Short Description',
+      gridColumns: 12,
+      gridSmColumns: 12,
+      rows: 3,
+      placeholder: 'Type short description'
+    },
+    { property: 'email', divider: 'CONTACTS', gridColumns: 6, icon: 'po-icon-mail' },
+    { property: 'phone', mask: '(99) 99999-9999', gridColumns: 6, icon: 'po-icon po-icon-telephone' },
+    {
+      property: 'state',
+      gridColumns: 6,
+      options: [
+        { label: 'Santa Catarina', value: 1 },
+        { label: 'São Paulo', value: 2 },
+        { label: 'Rio de Janeiro', value: 3 },
+        { label: 'Minas Gerais', value: 4 }
+      ]
+    },
+    {
+      property: 'wage',
+      type: 'currency',
+      gridColumns: 6,
+      gridSmColumns: 12,
+      decimalsLength: 2,
+      thousandMaxlength: 7,
+      icon: 'po-icon-finance'
+    }
+  ];
 }
