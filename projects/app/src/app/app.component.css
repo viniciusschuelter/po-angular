@@ -8,7 +8,7 @@
   color: #f7f6f5;
 }
 
-.style1 {
+.style-inputColor {
   -webkit-animation: none;
   -moz-appearance: none;
   min-width: 32px;
@@ -20,12 +20,12 @@
   background-color: transparent;
 }
 
-.style1::-webkit-color-swatch {
+.style-inputColor::-webkit-color-swatch {
   border-radius: 5px;
   border: none;
 }
 
-.style1::-moz-color-swatch {
+.style-inputColor::-moz-color-swatch {
   border-radius: 15px;
   border: none;
 }
@@ -44,19 +44,19 @@
   margin-right: auto;
 }
 
-.linha-vertical {
+.vertical-line {
   margin-left: 15px;
   height: 32px;
   border-left: 1px solid rgb(177, 169, 169);
 }
 
-.teste2 {
+.container-space-between {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 10% 0 0;
 }
 
-.esconder {
+.hide {
   display: none;
 }
